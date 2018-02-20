@@ -96,6 +96,7 @@ public class GameScreen implements Screen {
             }
         } while (!players.get(currentPlayerIndex).isAlive());
         players.get(currentPlayerIndex).takeTurn();
+        map.updateWindPower();
     }
 
     public void createGUI() {
@@ -370,7 +371,7 @@ public class GameScreen implements Screen {
             if (players.get(i) == tank) {
                 players.remove(i);
                 soundExplosion.play();
-                if(i < currentPlayerIndex) {
+                if (i < currentPlayerIndex) {
                     currentPlayerIndex--;
                 }
                 particleEmitter.makeExplosion(tank.getHitArea().x, tank.getPosition().y);
@@ -491,6 +492,7 @@ public class GameScreen implements Screen {
         }
         particleEmitter.render(batch);
         infoSystem.render(batch, font24);
+        font24.draw(batch, map.getValueWindPower(), 50, 700);
         batch.end();
         stage.draw();
     }

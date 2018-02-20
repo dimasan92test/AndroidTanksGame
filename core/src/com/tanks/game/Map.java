@@ -14,15 +14,25 @@ public class Map {
     private float time;
     private Vector3[] clouds;
     private float windPower;
+    private StringBuilder valueWindPower;
 
     private static final int CELL_SIZE = 2;
     private static final int WIDTH = 1280 / CELL_SIZE;
     private static final int HEIGHT = 720 / CELL_SIZE;
 
 
+    public float getWindPower() {
+        return windPower;
+    }
+
+    public StringBuilder getValueWindPower() {
+        return valueWindPower;
+    }
+
     public Map() {
         this.textureGround = new TextureRegion(Assets.getInstance().getAtlas().findRegion("grass"));
         this.textureClouds = new TextureRegion[3];
+        valueWindPower = new StringBuilder();
         TextureRegion[][] tmp = new TextureRegion(Assets.getInstance().getAtlas().findRegion("clouds")).split(256, 128);
         for (int i = 0; i < 3; i++) {
             textureClouds[i] = tmp[i][0];
@@ -34,7 +44,7 @@ public class Map {
         for (int i = 0; i < clouds.length; i++) {
             clouds[i] = new Vector3(MathUtils.random(-640, 1280 + 640), MathUtils.random(560, 700), MathUtils.random(0, 2));
         }
-        this.windPower = 20.0f;
+        updateWindPower();
     }
 
     public void generate() {
@@ -51,6 +61,27 @@ public class Map {
                 data[i][j] = 1;
                 color[i][j] = ((float) j / HEIGHT);
             }
+        }
+    }
+
+    public void updateWindPower() {
+        windPower = MathUtils.random(-35.0f, 35.0f);
+        valueWindPower.setLength(0);
+        valueWindPower.append("Wind power: ");
+        if (windPower < -25) {
+            valueWindPower.append(-3);
+        } else if (windPower < -15) {
+            valueWindPower.append(-2);
+        } else if (windPower < -5) {
+            valueWindPower.append(-1);
+        } else if (windPower < 5) {
+            valueWindPower.append(0);
+        } else if (windPower < 15) {
+            valueWindPower.append(1);
+        } else if (windPower < 25) {
+            valueWindPower.append(2);
+        } else {
+            valueWindPower.append(3);
         }
     }
 

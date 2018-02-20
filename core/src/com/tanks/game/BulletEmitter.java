@@ -7,12 +7,13 @@ import com.badlogic.gdx.math.Vector2;
 
 public class BulletEmitter extends ObjectPool<Bullet> {
     public enum BulletType {
-        LIGHT_AMMO(ParticleEmitter.BulletEffectType.FIRE, true, true, 32, 5.0f),
-        LASER(ParticleEmitter.BulletEffectType.LASER, false, true, 1, 10.0f);
+        LIGHT_AMMO(ParticleEmitter.BulletEffectType.FIRE, true, true, true, 32, 5.0f),
+        LASER(ParticleEmitter.BulletEffectType.LASER, false, true, false, 1, 10.0f);
 
         private ParticleEmitter.BulletEffectType effect;
         private boolean gravity;
         private boolean bouncing;
+        private boolean effectOfWind;
         private int groundClearingSize;
         private float maxTime;
 
@@ -28,6 +29,8 @@ public class BulletEmitter extends ObjectPool<Bullet> {
             return bouncing;
         }
 
+        public boolean isEffectOfWind(){return effectOfWind;}
+
         public int getGroundClearingSize() {
             return groundClearingSize;
         }
@@ -36,8 +39,9 @@ public class BulletEmitter extends ObjectPool<Bullet> {
             return maxTime;
         }
 
-        BulletType(ParticleEmitter.BulletEffectType effect, boolean gravity, boolean bouncing, int groundClearingSize, float maxTime) {
+        BulletType(ParticleEmitter.BulletEffectType effect, boolean gravity, boolean bouncing,boolean effectOfWind, int groundClearingSize, float maxTime) {
             this.effect = effect;
+            this.effectOfWind = effectOfWind;
             this.gravity = gravity;
             this.bouncing = bouncing;
             this.groundClearingSize = groundClearingSize;
@@ -46,6 +50,7 @@ public class BulletEmitter extends ObjectPool<Bullet> {
     }
 
     private GameScreen game;
+    private Map gameMap;
     private TextureRegion bulletTexture;
 
     @Override
@@ -56,6 +61,7 @@ public class BulletEmitter extends ObjectPool<Bullet> {
     public BulletEmitter(GameScreen game, int size) {
         super(size);
         this.game = game;
+        this.gameMap = game.getMap();
         bulletTexture = Assets.getInstance().getAtlas().findRegion("ammo");
     }
 
@@ -77,6 +83,10 @@ public class BulletEmitter extends ObjectPool<Bullet> {
         b.addTime(dt);
         if (b.getType().isGravity()) {
             b.getVelocity().y -= GameScreen.GLOBAL_GRAVITY * dt;
+        }
+
+        if(b.getType().isEffectOfWind()){
+            b.getVelocity().x += gameMap.getWindPower()*0.5f;
         }
 
         v2tmp.set(b.getVelocity()).scl(dt);
